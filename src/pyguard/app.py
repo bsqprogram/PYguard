@@ -23,11 +23,17 @@ login_results = []
 failed_attempts = 0
 
 
-def detect_login_activity(failed_attempts):
+def detect_login_activity(login_results, target_ip):
+    failed_attempts = 0
+    
+    for event in login_results:
+        if event["ip"] == target_ip and event["result"] == "failed":
+            failed_attempts += 1
+    
     if failed_attempts >= 3:
         return "Suspect Log Detected!"
     else:
-        return "Login activity looks normal"    
+        return "Login activity looks normal"
 
 
 
@@ -54,7 +60,17 @@ for i in range(1, log_attempts + 1):
 
     
     
-result = detect_login_activity(failed_attempts)
+result = detect_login_activity(login_results, ip_address)
 print("failed attempts: ", failed_attempts)
+
 print(result)
-print(login_results)
+for event in login_results:
+    print(
+        event["timestamp"].strftime("%Y-%m-%d %H:%M:%S"), #Y-rok, m
+        "|",
+        event["ip"],
+        "|",
+        event["username"],
+        "|",
+        event["result"]
+    )
